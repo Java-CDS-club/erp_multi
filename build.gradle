@@ -1,0 +1,77 @@
+subprojects{                            
+    apply plugin: 'java'
+	
+//	compileJava.options.encoding = 'UTF-8'
+    sourceCompatibility = 1.8
+	//인코딩 지정
+	tasks.withType(JavaCompile) {
+	    options.encoding = 'UTF-8'
+	}
+	
+	repositories {
+	    jcenter()
+	}
+	
+	dependencies {
+	    testImplementation 'junit:junit:4.12'
+	}
+	
+	task initSourceFolders {
+        sourceSets*.java.srcDirs*.each {      // src/main 생성
+            if( !it.exists() ) {
+                it.mkdirs()
+            }
+        }
+        sourceSets*.resources.srcDirs*.each { // src/resources 생성
+            if( !it.exists() ) {
+                it.mkdirs()
+            }
+        }
+    }
+	
+}
+
+//include 'erp_multi_common'
+//include 'erp_multi_api'
+//include 'erp_multi_swing'
+
+project('erp_multi_api'){
+	apply plugin: 'eclipse'
+
+    dependencies {
+        compile project(':erp_multi_common')
+        compile group: 'org.mybatis', name: 'mybatis', version: '3.5.3'
+        compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.47'
+        compile group: 'com.zaxxer', name: 'HikariCP', version: '3.4.1'
+
+        compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.13.0'
+        compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.13.0'
+        compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.30'
+        testCompile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.13.0'
+
+        testImplementation 'junit:junit:4.12'
+    }
+}
+
+project('erp_multi_swing'){
+    apply plugin: 'eclipse'
+    apply plugin: 'application'
+
+    dependencies {
+        compile project(':erp_multi_common')
+        compile project(':erp_multi_api')
+        compile group: 'com.jtattoo', name: 'JTattoo', version: '1.6.11'
+        // https://mvnrepository.com/artifact/com.toedter/jcalendar
+		compile group: 'com.toedter', name: 'jcalendar', version: '1.4'
+    }
+
+	jar {
+	    version = 1.0
+	    mainClassName = 'erp_multi_swing.ui.ErpMain'
+	
+	    manifest{
+	        attributes 'Title': baseName, 'Version': version, 'Main-Class' : mainClassName
+	    }
+		dependsOn configurations.runtime
+	}
+}

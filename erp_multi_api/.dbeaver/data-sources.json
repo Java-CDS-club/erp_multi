@@ -1,0 +1,46 @@
+{
+	"folders": {},
+	"connections": {
+		"mysql5-170347c52e4-57336b8ade497e11": {
+			"provider": "mysql",
+			"driver": "mysql5",
+			"name": "MySQL - localhost(root)",
+			"save-password": true,
+			"read-only": false,
+			"configuration": {
+				"host": "localhost",
+				"port": "3306",
+				"url": "jdbc:mysql://localhost:3306/",
+				"home": "C:\\Program Files\\MySQL\\MySQL Server 5.7",
+				"type": "dev",
+				"handlers": {}
+			}
+		},
+		"mysql5-170347d501e-25891c67bdb46a46": {
+			"provider": "mysql",
+			"driver": "mysql5",
+			"name": "MySQL - erp_jdbc(user)",
+			"save-password": true,
+			"read-only": false,
+			"configuration": {
+				"host": "localhost",
+				"port": "3306",
+				"database": "erp_jdbc",
+				"url": "jdbc:mysql://localhost:3306/erp_jdbc",
+				"home": "C:\\Program Files\\MySQL\\MySQL Server 5.7",
+				"type": "dev",
+				"handlers": {}
+			}
+		}
+	},
+	"connection-types": {
+		"dev": {
+			"name": "Development",
+			"color": "255,255,255",
+			"description": "Regular development database",
+			"auto-commit": true,
+			"confirm-execute": false,
+			"confirm-data-change": false
+		}
+	}
+}

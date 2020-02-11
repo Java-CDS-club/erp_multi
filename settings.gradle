@@ -1,0 +1,4 @@
+rootProject.name = 'erp_multi'
+include 'erp_multi_common'
+include 'erp_multi_api'
+include 'erp_multi_swing'
