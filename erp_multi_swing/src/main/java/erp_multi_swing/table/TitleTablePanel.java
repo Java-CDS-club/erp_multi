@@ -33,7 +33,8 @@ public class TitleTablePanel extends AbstractTablePanel<Title> {
 	@Override
 	public void updateRow(Title item, int updateIdx) {
 		model.setValueAt(item.getTitleNo(), updateIdx, 0);
-		model.setValueAt(item.getTitleName(), updateIdx, 1);		
+		model.setValueAt(item.getTitleName(), updateIdx, 1);
+//		clearSelection();
 	}
 
 	@Override

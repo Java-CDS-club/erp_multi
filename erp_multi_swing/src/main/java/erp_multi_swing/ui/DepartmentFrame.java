@@ -19,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 import erp_multi_common.dto.Department;
 import erp_multi_common.dto.Employee;
 import erp_multi_swing.content.DepartmentPanel;
+import erp_multi_swing.exception.InvalidCheckException;
 import erp_multi_swing.service.DepartmentService;
 import erp_multi_swing.table.DepartmentTablePanel;
 
@@ -108,6 +109,8 @@ public class DepartmentFrame extends JFrame implements ActionListener {
 			pList.addRow(newDept);
 			pDepartment.clearTf();
 			JOptionPane.showMessageDialog(null, "부서가 추가되었습니다.");
+		} catch(InvalidCheckException e1) {
+			JOptionPane.showMessageDialog(null, e1.getMessage());
 		} catch (RuntimeException e1) {
 			SQLException e2 = (SQLException) e1.getCause();
 			if (e2.getErrorCode() == 1062) {
@@ -115,8 +118,9 @@ public class DepartmentFrame extends JFrame implements ActionListener {
 				System.err.println(e2.getMessage());
 				return;
 			}
+			
 			e1.printStackTrace();
-		}
+		} 
 	}
 
 	protected void btnCancelActionPerformed(ActionEvent e) {

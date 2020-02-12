@@ -41,6 +41,7 @@ import com.toedter.calendar.JDateChooser;
 import erp_multi_common.dto.Department;
 import erp_multi_common.dto.Employee;
 import erp_multi_common.dto.Title;
+import erp_multi_swing.exception.InvalidCheckException;
 import erp_multi_swing.listener.MyDocumentListener;
 
 @SuppressWarnings("serial")
@@ -238,16 +239,14 @@ public class EmployeePanel extends AbsItemPanel<Employee> implements ActionListe
 	
 	@Override
 	public Employee getItem() {
+		validCheck();
 		int empNo = Integer.parseInt(tfNo.getText().trim());
 		String empName = tfName.getText().trim();
 		Title title = (Title) cmbTitle.getSelectedItem();
 		Employee manager = (Employee) cmbMgn.getSelectedItem();
 		int salary = (int) spSalary.getValue();
 		Department dept = (Department) cmbDept.getSelectedItem();
-		String passwd = null;
-		if (lblEqual.getText().contentEquals("비밀번호 일치.")) {
-			passwd = new String(pfPasswd1.getPassword());
-		}
+		String passwd = new String(pfPasswd1.getPassword());
 		Date hireDate = tfHireDate.getDate();
 		Employee newEmp = new Employee(empNo, empName, title, manager, salary, dept, passwd, hireDate);
 		newEmp.setPic(getImage());
@@ -310,6 +309,15 @@ public class EmployeePanel extends AbsItemPanel<Employee> implements ActionListe
 			e.printStackTrace();
 		}
 		return pic;
+	}
+
+	@Override
+	public void validCheck() {
+		if (tfNo.getText().contentEquals("") || tfName.getText().contentEquals("") || 
+				cmbDept.getSelectedIndex()==-1 || cmbMgn.getSelectedIndex() == -1 ||
+				cmbTitle.getSelectedIndex()==-1 || !lblEqual.getText().contentEquals("비밀번호 일치.") ) {
+			throw new InvalidCheckException();
+		}		
 	}
 	
 }

@@ -69,6 +69,7 @@ public class EmployeeTablePanel extends AbstractTablePanel<Employee> {
 		model.setValueAt(String.format("%s(%d)", item.getDept().getDeptName(), item.getDept().getDeptNo()), updateIdx, 5);//소속부서번호	
 		model.setValueAt(String.format("%tF", item.getHireDate()), updateIdx, 6);
 		picMaps.replace(item.getEmpNo(), item.getPic());
+//		clearSelection();
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 import erp_multi_common.dto.Title;
+import erp_multi_swing.exception.InvalidCheckException;
 
 @SuppressWarnings("serial")
 public class TitlePanel extends AbsItemPanel<Title> {
@@ -41,6 +42,7 @@ public class TitlePanel extends AbsItemPanel<Title> {
 	
 	@Override
 	public Title getItem() {
+		validCheck();
 		int titleNo = Integer.parseInt(tfTitleNo.getText().trim());
 		String titleName = tfTitleName.getText().trim();
 		return new Title(titleNo, titleName);
@@ -56,6 +58,13 @@ public class TitlePanel extends AbsItemPanel<Title> {
 	public void clearTf() {
 		tfTitleNo.setText("");
 		tfTitleName.setText("");		
+	}
+
+	@Override
+	public void validCheck() {
+		if (tfTitleNo.getText().contentEquals("") || tfTitleName.getText().contentEquals("")) {
+			throw new InvalidCheckException();
+		}		
 	}
 
 }

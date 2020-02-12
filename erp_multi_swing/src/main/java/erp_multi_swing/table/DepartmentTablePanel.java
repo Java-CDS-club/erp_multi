@@ -24,6 +24,7 @@ public class DepartmentTablePanel extends AbstractTablePanel<Department> {
 		model.setValueAt(item.getDeptNo(), row, 0);
 		model.setValueAt(item.getDeptName(), row, 1);
 		model.setValueAt(item.getFloor(), row, 2);
+//		clearSelection();
 	}
 
 	protected Object[] toArray(Department item) {

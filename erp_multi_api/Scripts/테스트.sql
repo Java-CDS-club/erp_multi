@@ -1,5 +1,5 @@
 select * from employee;
-
+select * from title;
 select * from employee where dept=2;
 
 select e.emp_no, e.emp_name, t.title_name 

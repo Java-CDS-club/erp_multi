@@ -124,7 +124,11 @@ public abstract class AbstractTablePanel<T> extends JPanel {
 	public void addRow(T item) {
 		model.addRow(toArray(item));
 	}
-
+	
+	public void clearSelection() {
+		table.clearSelection();
+	}
+	
 	//수정금지하기위한 모델 선언
 	protected class NotEditableModel extends DefaultTableModel{
 
@@ -162,8 +166,6 @@ public abstract class AbstractTablePanel<T> extends JPanel {
 		}
 	}
 */
-	public void clearSelection() {
-		table.clearSelection();
-	}
+
 	
 }

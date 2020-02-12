@@ -21,6 +21,7 @@ import javax.swing.border.EmptyBorder;
 import erp_multi_common.dto.Department;
 import erp_multi_common.dto.Employee;
 import erp_multi_swing.content.EmployeePanel;
+import erp_multi_swing.exception.InvalidCheckException;
 import erp_multi_swing.service.EmployeeService;
 import erp_multi_swing.table.EmployeeTablePanel;
 
@@ -117,6 +118,8 @@ public class EmployeeFrame extends JFrame implements ActionListener, ItemListene
 			pList.addRow(newEmp);
 			pEmployee.clearTf();
 			JOptionPane.showMessageDialog(null, String.format("%s(%d)이 추가되었습니다.", newEmp.getEmpName(), newEmp.getEmpNo()));
+		} catch(InvalidCheckException e1) {
+			JOptionPane.showMessageDialog(null, e1.getMessage());
 		} catch (RuntimeException e1) {
 			SQLException e2 = (SQLException) e1.getCause();
 			if (e2.getErrorCode() == 1062) {

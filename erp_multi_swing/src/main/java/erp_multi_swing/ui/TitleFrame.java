@@ -19,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 import erp_multi_common.dto.Employee;
 import erp_multi_common.dto.Title;
 import erp_multi_swing.content.TitlePanel;
+import erp_multi_swing.exception.InvalidCheckException;
 import erp_multi_swing.service.TitleService;
 import erp_multi_swing.table.TitleTablePanel;
 
@@ -28,7 +29,7 @@ public class TitleFrame extends JFrame implements ActionListener {
 	private JPanel contentPane;
 	private JPanel pContent;
 	private TitleTablePanel pList;
-	private TitlePanel pDepartment;
+	private TitlePanel pTitle;
 	private JPanel pBtns;
 	private JButton btnAdd;
 	private JButton btnCancel;
@@ -56,8 +57,8 @@ public class TitleFrame extends JFrame implements ActionListener {
 		contentPane.add(pContent);
 		pContent.setLayout(new BorderLayout(0, 0));
 
-		pDepartment = new TitlePanel();
-		pContent.add(pDepartment, BorderLayout.CENTER);
+		pTitle = new TitlePanel();
+		pContent.add(pTitle, BorderLayout.CENTER);
 
 		pBtns = new JPanel();
 		contentPane.add(pBtns);
@@ -93,35 +94,37 @@ public class TitleFrame extends JFrame implements ActionListener {
 	}
 
 	private void btnUpdateActionPerformed(ActionEvent e) {
-		Title updateTitle = pDepartment.getItem();
+		Title updateTitle = pTitle.getItem();
 		service.modifyTitle(updateTitle);
 		pList.updateRow(updateTitle, pList.getSelectedRowIndex());
 		btnAdd.setText("추가");
-		pDepartment.clearTf();
+		pTitle.clearTf();
 		JOptionPane.showMessageDialog(null, String.format("%s(%d) 수정되었습니다", updateTitle.getTitleName(), updateTitle.getTitleNo()));
 	}
 
 	protected void btnAddActionPerformed(ActionEvent e) {
 		try {
-			Title newTitle = pDepartment.getItem();
+			Title newTitle = pTitle.getItem();
 			service.addTitle(newTitle);
 			pList.addRow(newTitle);
-			pDepartment.clearTf();
+			pTitle.clearTf();
 			JOptionPane.showMessageDialog(null, String.format("%s(%d) 추가되었습니다", newTitle.getTitleName(), newTitle.getTitleNo()));
+		} catch(InvalidCheckException e1) {
+			JOptionPane.showMessageDialog(null, e1.getMessage());
 		} catch (RuntimeException e1) {
 			SQLException e2 = (SQLException) e1.getCause();
 			if (e2.getErrorCode() == 1062) {
 				JOptionPane.showMessageDialog(null, "직책번호가 중복");
 				System.err.println(e2.getMessage());
-				pDepartment.clearTf();
+				pTitle.clearTf();
 				return;
 			}
 			e1.printStackTrace();
-		}
+		} 
 	}
 
 	protected void btnCancelActionPerformed(ActionEvent e) {
-		pDepartment.clearTf();
+		pTitle.clearTf();
 		btnAdd.setText("추가");
 	}
 
@@ -148,7 +151,7 @@ public class TitleFrame extends JFrame implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("수정")) {
 				Title title = pList.getSelectedItem();
-				pDepartment.setItem(title);
+				pTitle.setItem(title);
 				btnAdd.setText("수정");
 			}
 			if (e.getActionCommand().equals("삭제")) {
