@@ -23,6 +23,9 @@ public class ErpMain {
 					
 					EmployeeFrame empFrame = new EmployeeFrame();
 					empFrame.setVisible(true);
+					
+					TitleFrame titleFrame = new TitleFrame();
+					titleFrame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

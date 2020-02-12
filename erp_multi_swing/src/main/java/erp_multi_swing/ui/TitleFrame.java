@@ -16,27 +16,27 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
 
-import erp_multi_common.dto.Department;
 import erp_multi_common.dto.Employee;
-import erp_multi_swing.content.DepartmentPanel;
-import erp_multi_swing.service.DepartmentService;
-import erp_multi_swing.table.DepartmentTablePanel;
+import erp_multi_common.dto.Title;
+import erp_multi_swing.content.TitlePanel;
+import erp_multi_swing.service.TitleService;
+import erp_multi_swing.table.TitleTablePanel;
 
 @SuppressWarnings("serial")
-public class DepartmentFrame extends JFrame implements ActionListener {
+public class TitleFrame extends JFrame implements ActionListener {
 
 	private JPanel contentPane;
 	private JPanel pContent;
-	private DepartmentTablePanel pList;
-	private DepartmentPanel pDepartment;
+	private TitleTablePanel pList;
+	private TitlePanel pDepartment;
 	private JPanel pBtns;
 	private JButton btnAdd;
 	private JButton btnCancel;
-	private DepartmentService service;
+	private TitleService service;
 	private DlgEmployee dialog;
 
-	public DepartmentFrame() {
-		service = new DepartmentService();
+	public TitleFrame() {
+		service = new TitleService();
 		dialog = new DlgEmployee();
 		dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
@@ -45,7 +45,7 @@ public class DepartmentFrame extends JFrame implements ActionListener {
 
 	private void initialize() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setTitle("부서 관리");
+		setTitle("직책 관리");
 		setBounds(100, 100, 450, 468);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -56,7 +56,7 @@ public class DepartmentFrame extends JFrame implements ActionListener {
 		contentPane.add(pContent);
 		pContent.setLayout(new BorderLayout(0, 0));
 
-		pDepartment = new DepartmentPanel();
+		pDepartment = new TitlePanel();
 		pContent.add(pDepartment, BorderLayout.CENTER);
 
 		pBtns = new JPanel();
@@ -70,10 +70,10 @@ public class DepartmentFrame extends JFrame implements ActionListener {
 		btnCancel.addActionListener(this);
 		pBtns.add(btnCancel);
 
-		pList = new DepartmentTablePanel();
+		pList = new TitleTablePanel();
 		contentPane.add(pList);
 
-		List<Department> depts = service.showDepartments();
+		List<Title> depts = service.showTitles();
 		pList.loadData(depts);
 
 		pList.setPopupMenu(createPopupMenu());
@@ -93,26 +93,27 @@ public class DepartmentFrame extends JFrame implements ActionListener {
 	}
 
 	private void btnUpdateActionPerformed(ActionEvent e) {
-		Department newDept = pDepartment.getItem();
-		service.modifyDepartment(newDept);
-		pList.updateRow(newDept, pList.getSelectedRowIndex());
+		Title updateTitle = pDepartment.getItem();
+		service.modifyTitle(updateTitle);
+		pList.updateRow(updateTitle, pList.getSelectedRowIndex());
 		btnAdd.setText("추가");
 		pDepartment.clearTf();
-		JOptionPane.showMessageDialog(null, "부서가 수정되었습니다.");
+		JOptionPane.showMessageDialog(null, String.format("%s(%d) 수정되었습니다", updateTitle.getTitleName(), updateTitle.getTitleNo()));
 	}
 
 	protected void btnAddActionPerformed(ActionEvent e) {
 		try {
-			Department newDept = pDepartment.getItem();
-			service.addDepartment(newDept);
-			pList.addRow(newDept);
+			Title newTitle = pDepartment.getItem();
+			service.addTitle(newTitle);
+			pList.addRow(newTitle);
 			pDepartment.clearTf();
-			JOptionPane.showMessageDialog(null, "부서가 추가되었습니다.");
+			JOptionPane.showMessageDialog(null, String.format("%s(%d) 추가되었습니다", newTitle.getTitleName(), newTitle.getTitleNo()));
 		} catch (RuntimeException e1) {
 			SQLException e2 = (SQLException) e1.getCause();
 			if (e2.getErrorCode() == 1062) {
-				JOptionPane.showMessageDialog(null, "부서번호가 중복");
+				JOptionPane.showMessageDialog(null, "직책번호가 중복");
 				System.err.println(e2.getMessage());
+				pDepartment.clearTf();
 				return;
 			}
 			e1.printStackTrace();
@@ -135,7 +136,7 @@ public class DepartmentFrame extends JFrame implements ActionListener {
 		deleteItem.addActionListener(myPopMenuListener);
 		popMenu.add(deleteItem);
 
-		JMenuItem showEmployee = new JMenuItem("소속 사원");
+		JMenuItem showEmployee = new JMenuItem("동일 직책 사원 보기");
 		showEmployee.addActionListener(myPopMenuListener);
 		popMenu.add(showEmployee);
 
@@ -146,21 +147,22 @@ public class DepartmentFrame extends JFrame implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (e.getActionCommand().equals("수정")) {
-				Department upDept = pList.getSelectedItem();
-				pDepartment.setItem(upDept);
+				Title title = pList.getSelectedItem();
+				pDepartment.setItem(title);
 				btnAdd.setText("수정");
 			}
 			if (e.getActionCommand().equals("삭제")) {
-				Department delDept = pList.getSelectedItem();
-				service.removeDepartment(delDept);
+				Title delTitle = pList.getSelectedItem();
+				service.removeTitle(delTitle);
 				pList.removeRow();
 				JOptionPane.showMessageDialog(null, "삭제되었습니다.");
 			}
-			if (e.getActionCommand().contentEquals("소속 사원")) {
-				Department selectedDept = pList.getSelectedItem(); // 선택한 부서정보
-				List<Employee> list = service.showEmployeeGroupByDno(selectedDept);
+			if (e.getActionCommand().contentEquals("동일 직책 사원 보기")) {
+				Title selectedTitle = pList.getSelectedItem(); // 선택한 부서정보
+				List<Employee> list = service.showEmployeeGroupByTitle(selectedTitle);
 				dialog.setEmpList(list);
-				dialog.setTitle(selectedDept.getDeptName() + " 부서");
+				dialog.setTitle(selectedTitle.getTitleName() + " 직책");
+
 				dialog.setVisible(true);
 			}
 		}

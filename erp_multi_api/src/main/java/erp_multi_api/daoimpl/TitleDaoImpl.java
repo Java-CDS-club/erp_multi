@@ -75,9 +75,8 @@ public class TitleDaoImpl implements TitleDao {
 			LogUtil.prnLog(pstmt);
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return 0;
 	}
 
 	@Override
@@ -90,9 +89,8 @@ public class TitleDaoImpl implements TitleDao {
 			LogUtil.prnLog(pstmt);
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return 0;
 	}
 
 	@Override
@@ -104,9 +102,8 @@ public class TitleDaoImpl implements TitleDao {
 			LogUtil.prnLog(pstmt);
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return 0;
 	}
 
 }

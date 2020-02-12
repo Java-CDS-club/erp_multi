@@ -144,7 +144,7 @@ public class EmployeePanel extends AbsItemPanel<Employee> implements ActionListe
 		pEmp.add(lblPasswd2);
 
 		lblEqual = new JLabel("");
-		lblEqual.setFont(new Font("굴림", Font.BOLD, 20));
+		lblEqual.setFont(new Font("굴림", Font.BOLD, 15));
 		lblEqual.setForeground(Color.RED);
 		lblEqual.setHorizontalAlignment(SwingConstants.CENTER);
 		
@@ -211,7 +211,11 @@ public class EmployeePanel extends AbsItemPanel<Employee> implements ActionListe
 	}
 	
 	private void setPic(byte[] img) {
-		lblPic.setIcon(new ImageIcon(img));
+		if (img == null) {
+			lblPic.setIcon(new ImageIcon(new ImageIcon(getClass().getClassLoader().getResource("no-image.png").getPath()).getImage().getScaledInstance((int)picDimen.getWidth(), (int)picDimen.getHeight(),  Image.SCALE_DEFAULT)));
+		}else {
+			lblPic.setIcon(new ImageIcon(new ImageIcon(img).getImage().getScaledInstance((int)picDimen.getWidth(), (int)picDimen.getHeight(),  Image.SCALE_DEFAULT)));
+		}
 	}
 	
 	public void setDeptList(List<Department> deptList) {
@@ -261,6 +265,7 @@ public class EmployeePanel extends AbsItemPanel<Employee> implements ActionListe
 		cmbDept.setSelectedItem(item.getDept());
 		cmbTitle.setSelectedItem(item.getTitle());
 		cmbMgn.setSelectedItem(item.getManager());
+		spSalary.setValue(item.getSalary());
 		lblEqual.setText("");
 	}
 
@@ -275,6 +280,7 @@ public class EmployeePanel extends AbsItemPanel<Employee> implements ActionListe
 		cmbDept.setSelectedIndex(-1);
 		cmbTitle.setSelectedIndex(-1);
 		cmbMgn.setSelectedIndex(-1);
+		spSalary.setValue(1500000);
 		lblEqual.setText("");
 	}
 

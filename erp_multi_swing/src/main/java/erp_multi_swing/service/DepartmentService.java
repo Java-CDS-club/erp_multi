@@ -1,6 +1,5 @@
 package erp_multi_swing.service;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import erp_multi_api.daoimpl.DepartmentDaoImpl;
@@ -27,15 +26,15 @@ public class DepartmentService {
 		return deptDao.selectDepartmentByAll();
 	}
 
-	public void addDepartment(Department newDept) throws SQLException {
+	public void addDepartment(Department newDept){
 		deptDao.insertDepartment(newDept);
 	}
 
-	public void modifyDepartment(Department dept) throws SQLException {
+	public void modifyDepartment(Department dept) {
 		deptDao.updateDepartment(dept);
 	}
 
-	public void removeDepartment(Department dept) throws SQLException {
+	public void removeDepartment(Department dept) {
 		deptDao.deleteDepartment(dept);
 	}
 

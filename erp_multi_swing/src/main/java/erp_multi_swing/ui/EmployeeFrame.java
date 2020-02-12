@@ -3,6 +3,8 @@ package erp_multi_swing.ui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -21,8 +23,6 @@ import erp_multi_common.dto.Employee;
 import erp_multi_swing.content.EmployeePanel;
 import erp_multi_swing.service.EmployeeService;
 import erp_multi_swing.table.EmployeeTablePanel;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 
 @SuppressWarnings("serial")
 public class EmployeeFrame extends JFrame implements ActionListener, ItemListener {
@@ -112,15 +112,15 @@ public class EmployeeFrame extends JFrame implements ActionListener, ItemListene
 
 	protected void btnAddActionPerformed(ActionEvent e) {
 		try {
-			Employee newDept = pEmployee.getItem();
-			service.addEmployee(newDept);
-			pList.addRow(newDept);
+			Employee newEmp = pEmployee.getItem();
+			service.addEmployee(newEmp);
+			pList.addRow(newEmp);
 			pEmployee.clearTf();
-			JOptionPane.showMessageDialog(null, "부서가 추가되었습니다.");
-		} catch (Exception e1) {
-			SQLException e2 = (SQLException) e1;
+			JOptionPane.showMessageDialog(null, String.format("%s(%d)이 추가되었습니다.", newEmp.getEmpName(), newEmp.getEmpNo()));
+		} catch (RuntimeException e1) {
+			SQLException e2 = (SQLException) e1.getCause();
 			if (e2.getErrorCode() == 1062) {
-				JOptionPane.showMessageDialog(null, "부서번호가 중복");
+				JOptionPane.showMessageDialog(null, "사원번호 중복");
 				System.err.println(e2.getMessage());
 				return;
 			}
@@ -160,6 +160,10 @@ public class EmployeeFrame extends JFrame implements ActionListener, ItemListene
 				service.removeEmployee(delEmp);
 				pList.removeRow();
 				JOptionPane.showMessageDialog(null, "삭제되었습니다.");
+				if (btnAdd.getText().contentEquals("수정")) {
+					pEmployee.clearTf();
+					btnAdd.setText("추가");
+				}
 			}
 			
 		}

@@ -59,10 +59,32 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		}
 		return emp;
 	}
-
+	
+	private Employee getEmployeeFull(ResultSet rs, boolean isPic) throws SQLException {
+		int empNo = rs.getInt("emp_no");
+		String empName = rs.getString("emp_name");
+		Title title = new Title(rs.getInt("title"), rs.getString("title_name"));
+		Employee manager = new Employee(rs.getInt("manager_no"));
+		manager.setEmpName(rs.getString("manager_name"));
+		int salary = rs.getInt("salary");
+		Date hireDate = rs.getTimestamp("hire_date");
+		Department dept = new Department();
+		dept.setDeptNo(rs.getInt("dept"));
+		dept.setDeptName(rs.getString("dept_name"));
+		Employee emp = new Employee(empNo, empName, title, manager, salary, dept, hireDate);
+		if (isPic) {
+			byte[] pic = rs.getBytes("pic");
+			emp.setPic(pic);
+		}
+		
+		return emp;
+	}
+	
 	@Override
 	public List<Employee> selectEmployeeByAll() {
-		String sql = "select emp_no, emp_name, title, manager, salary, dept, hire_date from employee";
+		String sql = "select e.emp_no, e.emp_name, e.title, title_name, e.manager as manager_no, m.emp_name as manager_name , e.salary, e.dept, dept_name, e.hire_date , e.pic" + 
+				"  from employee e left join title t on e.title = t.title_no left join employee m on e.manager = m.emp_no" + 
+				"  left join department d on e.dept = d.dept_no order by e.emp_no desc";
 		List<Employee> list = null;
 		try (Connection con = MySqlDataSource.getConnection();
 				PreparedStatement pstmt = con.prepareStatement(sql);
@@ -71,7 +93,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			if (rs.next()) {
 				list = new ArrayList<>();
 				do {
-					list.add(getEmployee(rs, false));
+					list.add(getEmployeeFull(rs, true));
 				} while (rs.next());
 			}
 		} catch (SQLException e) {
@@ -100,9 +122,8 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			}
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return 0;
 	}
 
 	@Override
@@ -122,6 +143,8 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			sql.append("passwd=password(?), ");
 		if (emp.getHireDate() != null)
 			sql.append("hire_date=?, ");
+		if (emp.getPic() != null)
+			sql.append("pic = ?, ");
 		sql.replace(sql.lastIndexOf(","), sql.length(), " ");
 		sql.append("where emp_no=?");
 
@@ -142,13 +165,14 @@ public class EmployeeDaoImpl implements EmployeeDao {
 				pstmt.setString(argCnt++, emp.getPasswd());
 			if (emp.getHireDate() != null)
 				pstmt.setTimestamp(argCnt++, new Timestamp(emp.getHireDate().getTime()));
+			if (emp.getPic() != null)
+				pstmt.setBytes(argCnt++, emp.getPic());
 			pstmt.setInt(argCnt++, emp.getEmpNo());
 			LogUtil.prnLog(pstmt);
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return 0;
 	}
 
 	@Override
@@ -160,9 +184,8 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			LogUtil.prnLog(pstmt);
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return 0;
 	}
 
 	@Override
@@ -197,7 +220,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
 			LogUtil.prnLog(pstmt);
 			try (ResultSet rs = pstmt.executeQuery()) {
 				while (rs.next()) {
-					list.add(getEmployeeFull(rs));
+					list.add(getEmployeeFull(rs, false));
 				}
 			}
 		} catch (SQLException e) {
@@ -206,25 +229,11 @@ public class EmployeeDaoImpl implements EmployeeDao {
 		return list;
 	}
 
-	private Employee getEmployeeFull(ResultSet rs) throws SQLException {
-		int empNo = rs.getInt("emp_no");
-		String empName = rs.getString("emp_name");
-		Title title = new Title(rs.getInt("title"), rs.getString("title_name"));
-		Employee manager = new Employee(rs.getInt("manager_no"));
-		manager.setEmpName(rs.getString("manager_name"));
-		int salary = rs.getInt("salary");
-		Date hireDate = rs.getTimestamp("hire_date");
-		Department dept = new Department();
-		dept.setDeptNo(rs.getInt("dept"));
-		dept.setDeptName(rs.getString("dept_name"));
-		return new Employee(empNo, empName, title, manager, salary, dept, hireDate);
-	}
-
 	@Override
 	public List<Employee> selectEmployeeByDept(Department dept) {
 		StringBuilder sql = new StringBuilder("select emp_no, emp_name, title_name from employee e left join title t on e.title = t.title_no ");
 		if (dept != null) {
-			sql.append("where dept = ? ");
+			sql.append("where dept = ? or e.manager is null ");
 		}
 		sql.append("order by t.title_no");
 		
@@ -246,6 +255,27 @@ public class EmployeeDaoImpl implements EmployeeDao {
 						emp.setTitle(title);
 						list.add(emp);
 					} while (rs.next());
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	@Override
+	public List<Employee> selectEmployeeGroupByTitle(Title title) {
+		String sql = "select e.emp_no, e.emp_name , e.title, t.title_name , m.emp_name as manager_name , m.emp_no as manager_no , e.salary, e.hire_date, e.dept , d.dept_name "
+				+ "from employee e left join employee m on e.manager = m.emp_no join department d on e.dept = d.dept_no join title t on e.title = t.title_no "
+				+ "where e.title =?";
+		List<Employee> list = new ArrayList<>();
+		try (Connection con = MySqlDataSource.getConnection();
+				PreparedStatement pstmt = con.prepareStatement(sql);) {
+			pstmt.setInt(1, title.getTitleNo());
+			LogUtil.prnLog(pstmt);
+			try (ResultSet rs = pstmt.executeQuery()) {
+				while (rs.next()) {
+					list.add(getEmployeeFull(rs, false));
 				}
 			}
 		} catch (SQLException e) {

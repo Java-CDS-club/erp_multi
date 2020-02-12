@@ -77,9 +77,8 @@ public class DepartmentDaoImpl implements DepartmentDao {
 			LogUtil.prnLog(pstmt);
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return 0;
 	}
 
 	@Override
@@ -93,9 +92,8 @@ public class DepartmentDaoImpl implements DepartmentDao {
 			LogUtil.prnLog(pstmt);
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return 0;
 	}
 
 	@Override
@@ -107,8 +105,7 @@ public class DepartmentDaoImpl implements DepartmentDao {
 			LogUtil.prnLog(pstmt);
 			return pstmt.executeUpdate();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException(e);
 		}
-		return 0;
 	}
 }

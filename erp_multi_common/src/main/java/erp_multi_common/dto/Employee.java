@@ -21,7 +21,8 @@ public class Employee {
 		this.empNo = empNo;
 	}
 
-	public Employee(int empNo, String empName, Title title, Employee manager, int salary, Department dept, Date hireDate) {
+	public Employee(int empNo, String empName, Title title, Employee manager, int salary, Department dept,
+			Date hireDate) {
 		this.empNo = empNo;
 		this.empName = empName;
 		this.title = title;
@@ -31,7 +32,8 @@ public class Employee {
 		this.hireDate = hireDate;
 	}
 
-	public Employee(int empNo, String empName, Title title, Employee manager, int salary, Department dept, String passwd, Date hireDate) {
+	public Employee(int empNo, String empName, Title title, Employee manager, int salary, Department dept,
+			String passwd, Date hireDate) {
 		this.empNo = empNo;
 		this.empName = empName;
 		this.title = title;
@@ -112,6 +114,28 @@ public class Employee {
 
 	public void setHireDate(Date hireDate) {
 		this.hireDate = hireDate;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + empNo;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Employee other = (Employee) obj;
+		if (empNo != other.empNo)
+			return false;
+		return true;
 	}
 
 	@Override
